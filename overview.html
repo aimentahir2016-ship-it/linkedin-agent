@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Your LinkedIn Agent — how it works</title>
+<style>
+  :root{
+    --ink:#15181d; --muted:#5c636e; --line:#e2e5ea; --bg:#fbfbfc;
+    --card:#ffffff; --accent:#1f3864; --accent-soft:#eef2f9;
+    --live:#0f7b4f; --live-bg:#e7f4ed; --check:#8a5a00; --check-bg:#fdf3e0;
+  }
+  @media (prefers-color-scheme: dark){
+    :root{
+      --ink:#e8eaee; --muted:#a0a7b4; --line:#2b3038; --bg:#141619;
+      --card:#1c1f24; --accent:#8fb0e8; --accent-soft:#232935;
+      --live:#5fd39b; --live-bg:#17301f; --check:#e8b657; --check-bg:#332a16;
+    }
+  }
+  *{box-sizing:border-box}
+  body{
+    margin:0; padding:32px 20px 72px; background:var(--bg); color:var(--ink);
+    font:16px/1.6 -apple-system,BlinkMacSystemFont,"Segoe UI",Inter,Roboto,sans-serif;
+  }
+  .wrap{max-width:820px;margin:0 auto}
+  h1{font-size:30px;line-height:1.2;margin:0 0 6px;letter-spacing:-.02em}
+  .sub{color:var(--muted);margin:0 0 34px;font-size:16px}
+  h2{font-size:19px;margin:40px 0 14px;letter-spacing:-.01em}
+  p{margin:0 0 14px}
+  .muted{color:var(--muted)}
+
+  /* flow */
+  .flow{display:flex;flex-direction:column;gap:0}
+  .step{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;
+    padding:16px 18px;position:relative;
+  }
+  .step .who{
+    font-size:11px;letter-spacing:.09em;text-transform:uppercase;
+    color:var(--accent);font-weight:700;margin-bottom:5px;
+  }
+  .step .what{font-weight:600;margin-bottom:3px}
+  .step .detail{color:var(--muted);font-size:14.5px}
+  .arrow{
+    height:26px;display:flex;align-items:center;justify-content:center;
+    color:var(--muted);font-size:15px;
+  }
+  .you{border-color:var(--accent);background:var(--accent-soft)}
+
+  /* parts table */
+  .parts{display:grid;gap:12px;margin-top:6px}
+  .part{
+    background:var(--card);border:1px solid var(--line);border-radius:12px;padding:16px 18px;
+  }
+  .part-head{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:6px}
+  .part-name{font-weight:650}
+  .tag{
+    font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;
+    padding:3px 8px;border-radius:999px;
+  }
+  .tag.live{background:var(--live-bg);color:var(--live)}
+  .tag.check{background:var(--check-bg);color:var(--check)}
+  .part-desc{color:var(--muted);font-size:14.5px}
+  code{
+    font:13px/1.4 ui-monospace,SFMono-Regular,Menlo,monospace;
+    background:var(--accent-soft);padding:2px 6px;border-radius:5px;
+  }
+  ul{margin:0 0 14px;padding-left:22px}
+  li{margin-bottom:7px}
+  .callout{
+    border-left:3px solid var(--accent);background:var(--card);
+    padding:14px 18px;border-radius:0 10px 10px 0;margin:18px 0;
+  }
+  .cal{width:100%;border-collapse:collapse;margin-top:6px;font-size:15px}
+  .cal th,.cal td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  .cal th{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .cal tr:last-child td{border-bottom:none}
+  footer{margin-top:44px;padding-top:18px;border-top:1px solid var(--line);
+    color:var(--muted);font-size:13.5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <h1>Your LinkedIn agent</h1>
+  <p class="sub">What each piece does, what runs on its own, and what you touch.</p>
+
+  <h2>The weekly loop</h2>
+  <div class="flow">
+    <div class="step">
+      <div class="who">Google Cloud · automatic</div>
+      <div class="what">Mon / Wed / Fri, 8am</div>
+      <div class="detail">Searches for what project managers are discussing this week, picks an angle you can speak to, and writes a post in your voice.</div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="step">
+      <div class="who">Email · automatic</div>
+      <div class="what">Draft lands in your inbox</div>
+      <div class="detail">Subject "LinkedIn draft". Contains the topic, the source it used, the post text, and why it thinks the angle works.</div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="step you">
+      <div class="who">You · 2 minutes</div>
+      <div class="what">Read it and decide</div>
+      <div class="detail">Reply <code>PUBLISH</code> to post it as written. Or reply <code>PUBLISH</code> on the first line with your own rewritten post underneath, and yours goes out instead. Ignore the email to skip it.</div>
+    </div>
+    <div class="arrow">↓</div>
+    <div class="step">
+      <div class="who">Apps Script · automatic, hourly</div>
+      <div class="what">Publishes to LinkedIn</div>
+      <div class="detail">Checks your inbox every hour for approvals, posts them, and emails you the link. Worst case, about an hour between your reply and the post going live.</div>
+    </div>
+  </div>
+
+  <h2>What Apps Script actually does</h2>
+  <p>It is the approval reader. It sits inside your Google account, wakes up every hour, looks for replies that start with <code>PUBLISH</code>, and posts them to LinkedIn.</p>
+  <p>You chose it over the cloud version because Gmail wanted a published privacy policy and terms of service before it would let an external app read your mail. Apps Script is not an external app — it is your own account acting on your own inbox — so none of that applies. No consent screen, no token to renew, no deployment.</p>
+  <div class="callout">
+    <strong>You do not run it.</strong> Once the hourly trigger exists, it runs on its own whether your laptop is open or not. You only open the editor again if something breaks, or to turn it off.
+  </div>
+
+  <h2>The pieces you built</h2>
+  <div class="parts">
+
+    <div class="part">
+      <div class="part-head"><span class="part-name">Apps Script publisher</span><span class="tag live">Working</span></div>
+      <div class="part-desc">Reads approvals, posts to LinkedIn, emails confirmation. Runs hourly. Verified working.</div>
+    </div>
+
+    <div class="part">
+      <div class="part-head"><span class="part-name">Draft generator</span><span class="tag check">Confirm it emails you</span>
+      </div>
+      <div class="part-desc"><code>linkedin-daily</code> on Cloud Run. Researches and writes. It was failing on the Gmail app password — check a draft actually arrives, and that the Mon/Wed/Fri schedule exists.</div>
+    </div>
+
+    <div class="part">
+      <div class="part-head"><span class="part-name">Chat agent</span><span class="tag check">Publishing blocked</span></div>
+      <div class="part-desc">Deployed on Agent Engine. Good for job searches, ad-hoc drafting, and planning your week. Cannot publish yet — it reaches your MCP server through a route returning a 421 error. The scheduled path is unaffected.</div>
+    </div>
+
+    <div class="part">
+      <div class="part-head"><span class="part-name">MCP server</span><span class="tag live">Deployed</span></div>
+      <div class="part-desc"><code>linkedin-mcp</code> on Cloud Run. Wraps LinkedIn posting, commenting, and job search. Reachable from your Mac; not reachable from inside Google Cloud.</div>
+    </div>
+
+    <div class="part">
+      <div class="part-head"><span class="part-name">Inbox triage</span><span class="tag check">Not finished</span></div>
+      <div class="part-desc">Written and tested, never deployed — it needs the Gmail access you abandoned. It could be rebuilt in Apps Script the same way the publisher was, which would sidestep the problem entirely.</div>
+    </div>
+
+  </div>
+
+  <h2>What you actually do each week</h2>
+  <ul>
+    <li>Read three draft emails. Reply <code>PUBLISH</code>, rewrite and reply, or ignore.</li>
+    <li>Comment on two or three posts by other people — the agent will suggest who and draft the comments, but you send them. This is the part that grows a network, and it is not automatable through LinkedIn's API.</li>
+    <li>Open the chat agent when you want job matches or a post on something specific.</li>
+  </ul>
+
+  <h2>Maintenance</h2>
+  <table class="cal">
+    <tr><th>When</th><th>What</th></tr>
+    <tr><td>Every ~55 days</td><td>LinkedIn access token expires. Re-run <code>get_linkedin_token.py</code> and update it in Secret Manager and in Apps Script.</td></tr>
+    <tr><td>Around 16 Oct 2026</td><td>The Gemini model retires. Change one line in <code>agent.py</code> and redeploy.</td></tr>
+    <tr><td>Monthly</td><td>Glance at your Google Cloud billing. Expect low single-digit dollars.</td></tr>
+  </table>
+
+  <footer>
+    Everything runs in your own Google Cloud project and your own Google account. Nothing publishes without your explicit approval of the exact words.
+  </footer>
+
+</div>
+</body>
+</html>
